@@ -1,4 +1,3 @@
-#    python -m unittest test_message_model.py
 
 import os 
 from sqlalchemy import exc
@@ -7,22 +6,16 @@ from models import db, User, Follows, Likes, Message
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
 
 
-# Now we can import app
 
 from app import app
 
-# Create our tables (we do this here, so we only create the tables
-# once for all tests --- in each test, we'll delete the data
-# and create fresh new clean test data
 
 db.create_all()
 
 
 class UserModelTestCase(TestCase):
-    """Test views for messages."""
 
     def setUp(self):
-        """Create test client, add sample data."""
         db.drop_all()
         db.create_all()
 
@@ -51,7 +44,6 @@ class UserModelTestCase(TestCase):
         db.session.add(m)
         db.session.commit()
 
-        # User should have 1 message
         self.assertEqual(len(self.u.messages), 1)
         self.assertEqual(self.u.messages[0].text, "a warble")
 

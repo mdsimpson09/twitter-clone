@@ -4,15 +4,9 @@ from unittest import TestCase
 from models import db, connect_db, Message, User, Likes, Follows
 from bs4 import BeautifulSoup
 
-
-# run these tests like:
-#
-#    FLASK_ENV=production python -m unittest test_message_views.py
-
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
 
 
-# Now we can import app
 
 from app import app, CURR_USER_KEY
 
@@ -23,10 +17,9 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 
 class MessageViewTestCase(TestCase):
-    """Test views for messages."""
 
     def setUp(self):
-        """Create test client, add sample data."""
+    
 
         db.drop_all()
         db.create_all()

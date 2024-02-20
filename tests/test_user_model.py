@@ -1,40 +1,23 @@
-"""User model tests."""
-
-# run these tests like:
-#
-#    python -m unittest test_user_model.py
-
-
 import os
 from unittest import TestCase
 
 from models import db, User, Message, Follows
 from sqlalchemy import exc
 
-# BEFORE we import our app, let's set an environmental variable
-# to use a different database for tests (we need to do this
-# before we import our app, since that will have already
-# connected to the database
+
 
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
 
-
-# Now we can import app
-
 from app import app
-
-# Create our tables (we do this here, so we only create the tables
-# once for all tests --- in each test, we'll delete the data
-# and create fresh new clean test data
 
 db.create_all()
 
 
 class UserModelTestCase(TestCase):
-    """Test views for messages."""
+
 
     def setUp(self):
-        """Create test client, add sample data."""
+
         db.drop_all()
         db.create_all()
         u1 = User.signup("test1", "email1@email.com", "password", None)
@@ -70,7 +53,6 @@ class UserModelTestCase(TestCase):
         db.session.add(u)
         db.session.commit()
 
-        # User should have no messages & no followers
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
 
@@ -114,7 +96,7 @@ class UserModelTestCase(TestCase):
         self.assertEqual(u_test.username, "testtesttest")
         self.assertEqual(u_test.email, "testtest@test.com")
         self.assertNotEqual(u_test.password, "password")
-        # Bcrypt strings should start with $2b$
+     
         self.assertTrue(u_test.password.startswith("$xy$"))
 
     def test_valid_authentication(self):

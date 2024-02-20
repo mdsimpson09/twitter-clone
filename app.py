@@ -8,11 +8,9 @@ from models import db, connect_db, User, Message
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
-# if __name__ == '__main__':
-#     app.run(debug=True)
+
 app.app_context().push()
-# Get DB_URI from environ variable (useful for production/testing) or,
-# if not set there, use development local db.
+
 app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get('DATABASE_URL', 'postgresql:///warbler'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -22,14 +20,9 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
-
-##############################################################################
-# User signup/login/logout
-
 @app.before_request
 def add_user_to_g():
-    """If we're logged in, add curr user to Flask global."""
-
+   
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
 
@@ -52,15 +45,7 @@ def do_logout():
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
-    """Handle user signup.
 
-    Create new user and add to DB. Redirect to home page.
-
-    If form not valid, present form.
-
-    If the there already is a user with that username: flash message
-    and re-present form.
-    """
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
     form = UserAddForm()
@@ -117,15 +102,8 @@ def logout():
     return redirect("/login")
 
 
-##############################################################################
-# General user routes:
-
 @app.route('/users')
 def list_users():
-    """Page with listing of users.
-
-    Can take a 'q' param in querystring to search by that username.
-    """
 
     search = request.args.get('q')
 
@@ -139,11 +117,10 @@ def list_users():
 
 @app.route('/users/<int:user_id>')
 def users_show(user_id):
-    """Show user profile."""
+   
 
     user = User.query.get_or_404(user_id)
-    # snagging messages in order from the database;
-    # user.messages won't be in order by default
+    
     messages = (Message
                 .query
                 .filter(Message.user_id == user_id)
@@ -156,7 +133,7 @@ def users_show(user_id):
 
 @app.route('/users/<int:user_id>/following')
 def show_following(user_id):
-    """Show list of people this user is following."""
+    
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -168,7 +145,6 @@ def show_following(user_id):
 
 @app.route('/users/<int:user_id>/followers')
 def users_followers(user_id):
-    """Show list of followers of this user."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -180,7 +156,6 @@ def users_followers(user_id):
 
 @app.route('/users/follow/<int:follow_id>', methods=['POST'])
 def add_follow(follow_id):
-    """Add a follow for the currently-logged-in user."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -195,7 +170,6 @@ def add_follow(follow_id):
 
 @app.route('/users/stop-following/<int:follow_id>', methods=['POST'])
 def stop_following(follow_id):
-    """Have currently-logged-in-user stop following this user."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -219,7 +193,6 @@ def show_likes(user_id):
 
 @app.route('/messages/<int:message_id>/like', methods=['POST'])
 def add_like(message_id):
-    """Toggle a liked message for the currently-logged-in user."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -243,7 +216,6 @@ def add_like(message_id):
 
 @app.route('/users/profile', methods=["GET", "POST"])
 def edit_profile():
-    """Update profile for current user."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -284,15 +256,10 @@ def delete_user():
     return redirect("/signup")
 
 
-##############################################################################
-# Messages routes:
+
 
 @app.route('/messages/new', methods=["GET", "POST"])
 def messages_add():
-    """Add a message:
-
-    Show form if GET. If valid, update message and redirect to user page.
-    """
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -337,17 +304,10 @@ def messages_destroy(message_id):
     return redirect(f"/users/{g.user.id}")
 
 
-##############################################################################
-# Homepage and error pages
 
 
 @app.route('/')
 def homepage():
-    """Show homepage:
-
-    - anon users: no messages
-    - logged in: 100 most recent messages of followed_users
-    """
 
     if g.user:
         following_ids = [f.id for f in g.user.following] + [g.user.id]
@@ -369,22 +329,13 @@ def homepage():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    """404 NOT FOUND page."""
-
+    
     return render_template('404.html'), 404
 
 
-##############################################################################
-# Turn off all caching in Flask
-#   (useful for dev; in production, this kind of stuff is typically
-#   handled elsewhere)
-#
-# https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
-
 @app.after_request
 def add_header(req):
-    """Add non-caching headers on every request."""
-
+   
     req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     req.headers["Pragma"] = "no-cache"
     req.headers["Expires"] = "0"
