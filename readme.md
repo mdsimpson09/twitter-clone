@@ -1,3 +1,20 @@
+Twitter-Clone- "Tweeter" 
+
+### Prerequisites
+
+- Python 3.x
+- Flask
+- WTForms 
+
+Step-by-step instructions on getting a dev environment running.
+1. copy repository from github 
+2. open terminal and navigate to the project directory
+3. pip install -r requirements.txt
+4. python3 -m venv venv
+5. run venv/bin/activate 
+6. set up local db "createdb warbler" and "python seed.py"
+7. run command "flask run" to start the server
+
 Important Note:
 If you are using Python 3.8 instead of 3.7, then you will have issues with installing some of the packages in the requirements.txt file into your virtual environment. For Python 3.8 students, we recommend deleting psycopg2-binary from the requirements.txt file, and using pip install psycopg2-binary in the terminal in order to successfully install this package. 
 
